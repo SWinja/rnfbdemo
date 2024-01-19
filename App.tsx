@@ -22,19 +22,10 @@ import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 import firebase from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
 import appCheck from '@react-native-firebase/app-check';
-import appDistribution from '@react-native-firebase/app-distribution';
 import auth from '@react-native-firebase/auth';
 import crashlytics from '@react-native-firebase/crashlytics';
-import database from '@react-native-firebase/database';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
-import firestore from '@react-native-firebase/firestore';
-import functions from '@react-native-firebase/functions';
-import inAppMessaging from '@react-native-firebase/in-app-messaging';
-import installations from '@react-native-firebase/installations';
 import messaging from '@react-native-firebase/messaging';
-import perf from '@react-native-firebase/perf';
 import remoteConfig from '@react-native-firebase/remote-config';
-import storage from '@react-native-firebase/storage';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -102,19 +93,10 @@ function App(): JSX.Element {
           {firebase.apps.length && <Text style={dynStyles.colors}>app()</Text>}
           {analytics().native && <Text style={dynStyles.colors}>analytics()</Text>}
           {appCheck().native && <Text style={dynStyles.colors}>appCheck()</Text>}
-          {appDistribution().native && <Text style={dynStyles.colors}>appDistribution()</Text>}
           {auth().native && <Text style={dynStyles.colors}>auth()</Text>}
           {crashlytics().native && <Text style={dynStyles.colors}>crashlytics()</Text>}
-          {database().native && <Text style={dynStyles.colors}>database()</Text>}
-          {dynamicLinks().native && <Text style={dynStyles.colors}>dynamicLinks()</Text>}
-          {firestore().native && <Text style={dynStyles.colors}>firestore()</Text>}
-          {functions().native && <Text style={dynStyles.colors}>functions()</Text>}
-          {inAppMessaging().native && <Text style={dynStyles.colors}>inAppMessaging()</Text>}
-          {installations().native && <Text style={dynStyles.colors}>installations()</Text>}
           {messaging().native && <Text style={dynStyles.colors}>messaging()</Text>}
-          {perf().native && <Text style={dynStyles.colors}>perf()</Text>}
           {remoteConfig().native && <Text style={dynStyles.colors}>remoteConfig()</Text>}
-          {storage().native && <Text style={dynStyles.colors}>storage()</Text>}
         </View>
       </ScrollView>
     </SafeAreaView>

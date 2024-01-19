@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e 
+set -e
 
 RN_VER=0.73.2
 RNFB_VER=18.7.3
@@ -71,7 +71,7 @@ fi
 
 # Initialize a fresh project.
 # We say "skip-install" because we control our ruby version and cocoapods (part of install) does not like it
-npm_config_yes=true npx react-native@${RN_VER} init rnfbdemo --skip-install --version=${RN_VER}
+npm_config_yes=true npx react-native@${RN_VER} init rnfbdemo --title "CoolSurveys" --skip-install --version=${RN_VER}
 cd rnfbdemo
 
 # New versions of react-native include annoying Ruby stuff that forces use of old rubies. Obliterate.
@@ -178,22 +178,14 @@ fi
 
 
 # From this point on we are adding optional modules. We test them all so we add them all. You only need to add what you need.
-# First set up all the modules that need no further config for the demo 
+# First set up all the modules that need no further config for the demo
 echo "Adding packages: Analytics, App Check, Auth, Database, Dynamic Links, Firestore, Functions, In App Messaging, Installations, Messaging, ML, Remote Config, Storage"
 yarn add \
   @react-native-firebase/analytics@${RNFB_VER} \
   @react-native-firebase/app-check@${RNFB_VER} \
   @react-native-firebase/auth@${RNFB_VER} \
-  @react-native-firebase/database@${RNFB_VER} \
-  @react-native-firebase/dynamic-links@${RNFB_VER} \
-  @react-native-firebase/firestore@${RNFB_VER} \
-  @react-native-firebase/functions@${RNFB_VER} \
-  @react-native-firebase/in-app-messaging@${RNFB_VER} \
-  @react-native-firebase/installations@${RNFB_VER} \
   @react-native-firebase/messaging@${RNFB_VER} \
-  @react-native-firebase/ml@${RNFB_VER} \
   @react-native-firebase/remote-config@${RNFB_VER} \
-  @react-native-firebase/storage@${RNFB_VER}
 
 # Optional: Crashlytics - repo, classpath, plugin, dependency, import, init
 echo "Setting up Crashlytics - package, gradle plugin"
@@ -205,26 +197,32 @@ rm -f android/app/build.gradle??
 sed -i -e $'s/proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"/proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"\\\n            firebaseCrashlytics {\\\n                nativeSymbolUploadEnabled true\\\n                unstrippedNativeLibsDir "build\/intermediates\/merged_native_libs\/release\/out\/lib"\\\n            }/' android/app/build.gradle
 rm -f android/app/build.gradle??
 
-# Optional: Performance - classpath, plugin, dependency, import, init
-echo "Setting up Performance - package, gradle plugin"
-yarn add "@react-native-firebase/perf@${RNFB_VER}"
-rm -f android/app/build.gradle??
-sed -i -e $"s/dependencies {/dependencies {\n        classpath \"com.google.firebase:perf-plugin:${FB_GRADLE_PERF_VER}\"/" android/build.gradle
-rm -f android/build.gradle??
-sed -i -e $'s/"com.google.gms.google-services"/"com.google.gms.google-services"\\\napply plugin: "com.google.firebase.firebase-perf"/' android/app/build.gradle
-rm -f android/app/build.gradle??
+# My custom modules
+yarn add inbrain-surveys react-native-plugin-pollfish @notifee/react-native
+yarn add @react-native-clipboard/clipboard @react-native-google-signin/google-signin @react-navigation/native @react-navigation/native-stack
+yarn add react-native-config react-native-device-info react-native-in-app-review react-native-linear-gradient react-native-localize react-native-safe-area-context react-native-screens react-native-svg react-native-webview validator
 
-# Optional: App Distribution - classpath, plugin, dependency, import, init
-echo "Setting up App Distribution - package, gradle plugin"
-yarn add "@react-native-firebase/app-distribution@${RNFB_VER}"
-sed -i -e $"s/dependencies {/dependencies {\n        classpath \"com.google.firebase:firebase-appdistribution-gradle:${FB_GRADLE_APP_DIST_VER}\"/" android/build.gradle
-rm -f android/build.gradle??
+
+## Optional: Performance - classpath, plugin, dependency, import, init
+#echo "Setting up Performance - package, gradle plugin"
+#yarn add "@react-native-firebase/perf@${RNFB_VER}"
+#rm -f android/app/build.gradle??
+#sed -i -e $"s/dependencies {/dependencies {\n        classpath \"com.google.firebase:perf-plugin:${FB_GRADLE_PERF_VER}\"/" android/build.gradle
+#rm -f android/build.gradle??
+#sed -i -e $'s/"com.google.gms.google-services"/"com.google.gms.google-services"\\\napply plugin: "com.google.firebase.firebase-perf"/' android/app/build.gradle
+#rm -f android/app/build.gradle??
+#
+## Optional: App Distribution - classpath, plugin, dependency, import, init
+#echo "Setting up App Distribution - package, gradle plugin"
+#yarn add "@react-native-firebase/app-distribution@${RNFB_VER}"
+#sed -i -e $"s/dependencies {/dependencies {\n        classpath \"com.google.firebase:firebase-appdistribution-gradle:${FB_GRADLE_APP_DIST_VER}\"/" android/build.gradle
+#rm -f android/build.gradle??
 
 # Required for Firestore - android build tweak - or gradle runs out of memory during the build
 echo "Increasing memory available to gradle for android java build"
 echo "org.gradle.jvmargs=-Xmx3072m -Dfile.encoding=UTF-8" >> android/gradle.properties
 
-# I'm not going to demonstrate messaging and notifications. Everyone gets it wrong because it's hard. 
+# I'm not going to demonstrate messaging and notifications. Everyone gets it wrong because it's hard.
 # You've got to read the docs and test *EVERYTHING* one feature at a time.
 # But you have to do a *lot* of work in the AndroidManifest.xml, and make sure your MainActivity *is* the launch intent receiver
 # I include it for compile testing only.
