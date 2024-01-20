@@ -23,7 +23,6 @@ import firebase from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
 import appCheck from '@react-native-firebase/app-check';
 import auth from '@react-native-firebase/auth';
-import crashlytics from '@react-native-firebase/crashlytics';
 import messaging from '@react-native-firebase/messaging';
 import remoteConfig from '@react-native-firebase/remote-config';
 
@@ -94,7 +93,6 @@ function App(): JSX.Element {
           {analytics().native && <Text style={dynStyles.colors}>analytics()</Text>}
           {appCheck().native && <Text style={dynStyles.colors}>appCheck()</Text>}
           {auth().native && <Text style={dynStyles.colors}>auth()</Text>}
-          {crashlytics().native && <Text style={dynStyles.colors}>crashlytics()</Text>}
           {messaging().native && <Text style={dynStyles.colors}>messaging()</Text>}
           {remoteConfig().native && <Text style={dynStyles.colors}>remoteConfig()</Text>}
         </View>
