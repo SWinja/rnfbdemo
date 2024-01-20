@@ -49,10 +49,10 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # Test: Previous compiles may confound future compiles, erase...
-\rm -fr "$HOME/Library/Developer/Xcode/DerivedData/rnfbdemo*"
+\rm -fr "$HOME/Library/Developer/Xcode/DerivedData/paidsurveys*"
 
 # Test: Basic template create, rnfb install, link
-\rm -fr rnfbdemo
+\rm -fr paidsurveys
 
 echo "Testing react-native ${RN_VER} + react-native-firebase ${RNFB_VER} + firebase-ios-sdk ${FB_IOS_VER} + firebase-android-sdk ${FB_ANDROID_VER}"
 
@@ -71,8 +71,8 @@ fi
 
 # Initialize a fresh project.
 # We say "skip-install" because we control our ruby version and cocoapods (part of install) does not like it
-npm_config_yes=true npx react-native@${RN_VER} init rnfbdemo --skip-install --version=${RN_VER}
-cd rnfbdemo
+npm_config_yes=true npx react-native@${RN_VER} init paidsurveys --skip-install --version=${RN_VER}
+cd paidsurveys
 
 # New versions of react-native include annoying Ruby stuff that forces use of old rubies. Obliterate.
 if [ -f Gemfile ]; then
@@ -89,10 +89,10 @@ npm_config_yes=true npx pod-install
 echo "Adding react-native-firebase core app package"
 yarn add "@react-native-firebase/app@${RNFB_VER}"
 echo "Adding basic iOS integration - AppDelegate import and config call"
-sed -i -e $'s/AppDelegate.h"/AppDelegate.h"\\\n#import <Firebase.h>/' ios/rnfbdemo/AppDelegate.m*
-rm -f ios/rnfbdemo/AppDelegate.m*-e
-sed -i -e $'s/self.moduleName/[FIRApp configure];\\\n  self.moduleName/' ios/rnfbdemo/AppDelegate.m*
-rm -f ios/rnfbdemo/AppDelegate.m*-e
+sed -i -e $'s/AppDelegate.h"/AppDelegate.h"\\\n#import <Firebase.h>/' ios/paidsurveys/AppDelegate.m*
+rm -f ios/paidsurveys/AppDelegate.m*-e
+sed -i -e $'s/self.moduleName/[FIRApp configure];\\\n  self.moduleName/' ios/paidsurveys/AppDelegate.m*
+rm -f ios/paidsurveys/AppDelegate.m*-e
 echo "Adding basic java integration - gradle plugin dependency and call"
 sed -i -e $"s/dependencies {/dependencies {\n        classpath \"com.google.gms:google-services:${FB_GRADLE_SERVICES_VER}\"/" android/build.gradle
 rm -f android/build.gradle??
@@ -129,7 +129,7 @@ rm -f ios/Podfile.??
 
 
 # Required: copy your Firebase config files in - you must supply them, downloaded from firebase web console
-echo "For this demo to work, you must create an \`rnfbdemo\` project in your firebase console,"
+echo "For this demo to work, you must create an \`paidsurveys\` project in your firebase console,"
 echo "then download the android json and iOS plist app definition files to the root directory"
 echo "of this repository"
 
@@ -137,7 +137,7 @@ echo "Copying in Firebase android json and iOS plist app definition files downlo
 
 if [ "$(uname)" == "Darwin" ]; then
   if [ -f "../GoogleService-Info.plist" ]; then
-    cp ../GoogleService-Info.plist ios/rnfbdemo/
+    cp ../GoogleService-Info.plist ios/paidsurveys/
   else
     echo "Unable to locate the file 'GoogleServices-Info.plist', did you create the firebase project and download the iOS file?"
     exit 1
@@ -164,15 +164,15 @@ if [ "$(uname)" == "Darwin" ]; then
   source virtualenv/bin/activate
   pip install pbxproj
 
-  # set PRODUCT_BUNDLE_IDENTIFIER to com.rnfbdemo
-  sed -i -e $'s/org.reactjs.native.example/com/' ios/rnfbdemo.xcodeproj/project.pbxproj
-  rm -f ios/rnfbdemo.xcodeproj/project.pbxproj-e
+  # set PRODUCT_BUNDLE_IDENTIFIER to com.paidsurveys
+  sed -i -e $'s/org.reactjs.native.example/com/' ios/paidsurveys.xcodeproj/project.pbxproj
+  rm -f ios/paidsurveys.xcodeproj/project.pbxproj-e
 
   # Add our Google Services file to the Xcode project
-  pbxproj file ios/rnfbdemo.xcodeproj rnfbdemo/GoogleService-Info.plist --target rnfbdemo
+  pbxproj file ios/paidsurveys.xcodeproj paidsurveys/GoogleService-Info.plist --target paidsurveys
 
   # Toggle on iPad: add build flag: TARGETED_DEVICE_FAMILY = "1,2"
-  pbxproj flag ios/rnfbdemo.xcodeproj --target rnfbdemo TARGETED_DEVICE_FAMILY "1,2"
+  pbxproj flag ios/paidsurveys.xcodeproj --target paidsurveys TARGETED_DEVICE_FAMILY "1,2"
 fi
 ##################################################################################################
 
@@ -234,12 +234,12 @@ printf "{\n  \"react-native\": {\n    \"crashlytics_disable_auto_disabler\": tru
 # Optional: allow explicit SDK version control by specifying our iOS Pods and Android Firebase Bill of Materials
 echo "Adding upstream SDK overrides for precise version control"
 echo "project.ext{set('react-native',[versions:[firebase:[bom:'${FB_ANDROID_VER}'],],])}" >> android/build.gradle
-sed -i -e $"s/  target 'rnfbdemoTests' do/  \$FirebaseSDKVersion = '${FB_IOS_VER}'\n  target 'rnfbdemoTests' do/" ios/Podfile
+sed -i -e $"s/  target 'paidsurveysTests' do/  \$FirebaseSDKVersion = '${FB_IOS_VER}'\n  target 'paidsurveysTests' do/" ios/Podfile
 rm -f ios/Podfile??
 
 # Optional: build performance - use pre-built version of Firestore - https://github.com/invertase/firestore-ios-sdk-frameworks
 # If you are using firestore and database you *may* end up with duplicate symbol build errors referencing "leveldb", the FirebaseFirestoreExcludeLeveldb boolean fixes that.
-#sed -i -e $'s/  target \'rnfbdemoTests\' do/  $FirebaseFirestoreExcludeLeveldb = true\\\n  pod \'FirebaseFirestore\', :git => \'https:\\/\\/github.com\\/invertase\\/firestore-ios-sdk-frameworks.git\', :tag => $FirebaseSDKVersion\\\n  target \'rnfbdemoTests\' do/' ios/Podfile
+#sed -i -e $'s/  target \'paidsurveysTests\' do/  $FirebaseFirestoreExcludeLeveldb = true\\\n  pod \'FirebaseFirestore\', :git => \'https:\\/\\/github.com\\/invertase\\/firestore-ios-sdk-frameworks.git\', :tag => $FirebaseSDKVersion\\\n  target \'paidsurveysTests\' do/' ios/Podfile
 #rm -f ios/Podfile??
 
 # Optional: Apple M1 workaround - builds may have a problem with architectures on Apple Silicon and Intel, some exclusions may help
@@ -287,16 +287,16 @@ if [ "$(uname)" == "Darwin" ]; then
     #################################################################################################
     # This section is so the script may work fully automatic.
     # If you are targeting macCatalyst, you will use the Xcode UI to add your development team.
-    # add file rnfbdemo/rnfbdemo.entitlements, with reference to rnfbdemo target, but no build phase
+    # add file paidsurveys/paidsurveys.entitlements, with reference to paidsurveys target, but no build phase
     echo "Adding macCatalyst entitlements file / build flags to Xcode project"
-    cp ../rnfbdemo.entitlements ios/rnfbdemo/
-    pbxproj file ios/rnfbdemo.xcodeproj rnfbdemo/rnfbdemo.entitlements --target rnfbdemo -C
-    # add build flag: CODE_SIGN_ENTITLEMENTS = rnfbdemo/rnfbdemo.entitlements
-    pbxproj flag ios/rnfbdemo.xcodeproj --target rnfbdemo CODE_SIGN_ENTITLEMENTS rnfbdemo/rnfbdemo.entitlements
+    cp ../paidsurveys.entitlements ios/paidsurveys/
+    pbxproj file ios/paidsurveys.xcodeproj paidsurveys/paidsurveys.entitlements --target paidsurveys -C
+    # add build flag: CODE_SIGN_ENTITLEMENTS = paidsurveys/paidsurveys.entitlements
+    pbxproj flag ios/paidsurveys.xcodeproj --target paidsurveys CODE_SIGN_ENTITLEMENTS paidsurveys/paidsurveys.entitlements
     # add build flag: SUPPORTS_MACCATALYST = YES
-    pbxproj flag ios/rnfbdemo.xcodeproj --target rnfbdemo SUPPORTS_MACCATALYST YES
+    pbxproj flag ios/paidsurveys.xcodeproj --target paidsurveys SUPPORTS_MACCATALYST YES
     # add build flag 				DEVELOPMENT_TEAM = 2W4T2B656C;
-    pbxproj flag ios/rnfbdemo.xcodeproj --target rnfbdemo DEVELOPMENT_TEAM "$XCODE_DEVELOPMENT_TEAM"
+    pbxproj flag ios/paidsurveys.xcodeproj --target paidsurveys DEVELOPMENT_TEAM "$XCODE_DEVELOPMENT_TEAM"
     #################################################################################################
 
     # Required for macCatalyst: Podfile workarounds for signing and library paths are built-in 0.70+ with a specific flag:
@@ -311,7 +311,7 @@ if [ "$(uname)" == "Darwin" ]; then
     # For some reason, the device id returned if you use the computer name is wrong.
     # It is also wrong from ios-deploy or xcrun xctrace list devices
     # The only way I have found to get the right ID is to provide the wrong one then parse out the available one
-    CATALYST_DESTINATION=$(xcodebuild -workspace ios/rnfbdemo.xcworkspace -configuration Debug -scheme rnfbdemo -destination id=7153382A-C92B-5798-BEA3-D82D195F25F8 2>&1|grep macOS|grep Catalyst|head -1 |cut -d':' -f5 |cut -d' ' -f1)
+    CATALYST_DESTINATION=$(xcodebuild -workspace ios/paidsurveys.xcworkspace -configuration Debug -scheme paidsurveys -destination id=7153382A-C92B-5798-BEA3-D82D195F25F8 2>&1|grep macOS|grep Catalyst|head -1 |cut -d':' -f5 |cut -d' ' -f1)
 
     # FIXME This requires a CLI patch to the iOS platform to accept a UDID it cannot probe, and to set type to catalyst
     npx react-native run-ios --udid "$CATALYST_DESTINATION" --mode Debug
@@ -335,7 +335,7 @@ if [ "$(uname -a | grep Linux | grep -c microsoft)" == "1" ]; then
 
   # Clear out the unix-y node_modules
   \rm -fr node_modules
-  echo "To run the app use Windows Powershell in the rnfbdemo directory with these commands:"
+  echo "To run the app use Windows Powershell in the paidsurveys directory with these commands:"
   echo "npm i"
   echo "npx react-native run-android --mode debug"
   exit
@@ -358,9 +358,9 @@ popd
 
 # Workaround flipper crash problem until Android Marshmallow (release 6+)
 # see https://github.com/facebook/flipper/issues/3572
-sed -i -e 's/^import android.app.Application/import android.app.Application\nimport android.os.Build/' android/app/src/main/java/com/rnfbdemo/MainApplication.kt
-sed -i -e 's/^    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)/    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {\n      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)\n    }/' android/app/src/main/java/com/rnfbdemo/MainApplication.kt
-rm -f android/app/src/main/java/com/rnfbdemo/MainApplication.kt??
+sed -i -e 's/^import android.app.Application/import android.app.Application\nimport android.os.Build/' android/app/src/main/java/com/paidsurveys/MainApplication.kt
+sed -i -e 's/^    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)/    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {\n      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)\n    }/' android/app/src/main/java/com/paidsurveys/MainApplication.kt
+rm -f android/app/src/main/java/com/paidsurveys/MainApplication.kt??
 
 # Test: may or may not be commented out, depending on if have an emulator available
 # I run it manually in testing when I have one, comment if you like
